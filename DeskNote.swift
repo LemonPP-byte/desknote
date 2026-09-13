@@ -411,12 +411,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if let w = window { store.saveGeometry(w.frameDescriptor) }
     }
 
-    // 主动注册用户字体目录里的像素字体，避免字体缓存未刷新时读不到
+    // 注册像素字体：优先用 .app 包内自带的，其次用户字体目录。避免字体缓存未刷新时读不到。
     private func registerBundledFont() {
-        let path = FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent("Library/Fonts/fusion-pixel-12px-proportional-zh_hans.ttf")
-        guard FileManager.default.fileExists(atPath: path.path) else { return }
-        CTFontManagerRegisterFontsForURL(path as CFURL, .process, nil)
+        let fontName = "fusion-pixel-12px-proportional-zh_hans.ttf"
+        var candidates: [URL] = []
+        if let inBundle = Bundle.main.url(forResource: "fusion-pixel-12px-proportional-zh_hans",
+                                          withExtension: "ttf") {
+            candidates.append(inBundle)
+        }
+        candidates.append(FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/Fonts/\(fontName)"))
+        for url in candidates where FileManager.default.fileExists(atPath: url.path) {
+            CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
+            return
+        }
     }
 }
 
