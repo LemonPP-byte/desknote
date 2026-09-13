@@ -1,0 +1,13 @@
+# 个人数据 —— 绝不上传
+notes.json
+
+# 编译产物
+desknote
+*.o
+*.dSYM/
+
+# 已废弃的旧版本（macOS 26 上 Tk 8.5 渲染/输入不稳，已被 Swift 版取代）
+desknote.py
+
+# macOS
+.DS_Store
